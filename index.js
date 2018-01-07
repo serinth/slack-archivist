@@ -1,60 +1,35 @@
 'use strict';
+const insertRowsAsStream = require('./bigquery').insertRowsAsStream
 
 exports.http = (req, res) => {
-  const projectId= 'slack-chatbot-ml';
-  const datasetId = 'prepare2fly';
-  const tableId = 'messages';
+  const projectId = '';
+  const datasetId = '';
+  const tableId = '';
   const challenge = req.body.challenge;
 
   if(challenge) {
-    res.status(200).send(challenge);
-  } else {
-    const rows = [];
-    const record = getMessageEvent(req.body);
+    res.status(200);
+    res.send(challenge);
+  } else {    
+    const record = this.getMessageEvent(req.body);
 
-    if(record) {
-      rows.push(record);
-      insertRowsAsStream(datasetId, tableId, rows, projectId)
+    if(record) {      
+      insertRowsAsStream(datasetId, tableId, [record], projectId)
         .then(() => {
-          res.status(200).send('OK');
+          console.log('here actually');
+          res.status(200);
+          res.send('OK');
         });
-    } else {
-      res.status(400).send('Unhandled');
-    }
-
+    } 
   }
 };
 
-function insertRowsAsStream(datasetId, tableId, rows, projectId) {
-  //[START bigquery_insert_stream]
-  const BigQuery = require('@google-cloud/bigquery');
+/* 
+  TODO: validations and better testing
+  At the moment just let the function fail, we don't care about junk requests
+*/
 
-  //const rows = [{name: "Tom", age: 30}, {name: "Jane", age: 32}];
-
-  const bigquery = new BigQuery({
-    projectId: projectId,
-  });
-
-  return bigquery
-    .dataset(datasetId)
-    .table(tableId)
-    .insert(rows)
-    .then(() => {
-      console.log(`Inserted ${rows.length} rows`);
-    })
-    .catch(err => {
-      if (err && err.name === 'PartialFailureError') {
-        if (err.errors && err.errors.length > 0) {
-          console.log('Insert errors:');
-          err.errors.forEach(err => console.error(err));
-        }
-      } else {
-        console.error('ERROR:', err);
-      }
-    });
-}
-
-function getMessageEvent(body) {
+exports.getMessageEvent = (body) => {
   return body.event.type == 'message' ? {
     user: body.event.user,
     ts: body.event.ts,

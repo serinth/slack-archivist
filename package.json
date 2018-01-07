@@ -4,12 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/_mocha *.spec.js"
   },
   "author": "truong.tony@live.com",
   "license": "MIT",
   "dependencies": {
     "@google-cloud/bigquery": "^0.12.0",
     "serverless-google-cloudfunctions": "^1.1.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "mocha": "^4.1.0",
+    "proxyquire": "^1.8.0",
+    "sinon": "^4.1.3",
+    "sinon-chai": "^2.14.0"
   }
 }
