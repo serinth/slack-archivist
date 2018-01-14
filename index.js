@@ -16,7 +16,6 @@ exports.http = (req, res) => {
     if(record) {      
       insertRowsAsStream(datasetId, tableId, [record], projectId)
         .then(() => {
-          console.log('here actually');
           res.status(200);
           res.send('OK');
         });
